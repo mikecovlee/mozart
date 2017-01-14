@@ -1,4 +1,11 @@
 #include "../headers/typelist.hpp"
+template<typename T>struct is_pointer {
+	static constexpr bool value=false;
+};
+template<typename T>struct is_pointer<T*> {
+	static constexpr bool value=true;
+};
+	
 int main()
 {
 	using A=typename cov::type_list::make<void>::result;
@@ -42,6 +49,14 @@ int main()
 
 	using J=typename cov::type_list::remove<I,void>::result;
 	cov::type_list::iterator<J>::show();
+	printf("\n");
+	
+	using K=typename cov::type_list::make<void*,int*,float,double**,const char*>::result;
+	cov::type_list::iterator<K>::show();
+	printf("\n");
+
+	using L=typename cov::type_list::remove_if<K,is_pointer>::result;
+	cov::type_list::iterator<L>::show();
 	printf("\n");
 
 	return 0;
