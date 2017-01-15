@@ -96,7 +96,7 @@ namespace cov {
 		_Tp mCurrent;
 	public:
 		tuple()=default;
-		tuple(typename cov::add_constant_reference<_Tp>::type val):mCurrent(val) {}
+		tuple(const _Tp& val):mCurrent(val) {}
 		~tuple()=default;
 		_Tp& get_current()
 		{
@@ -130,8 +130,7 @@ namespace cov {
 		tuple<_ArgsT...> mForward;
 	public:
 		tuple()=default;
-		tuple(typename cov::add_constant_reference<_Tp>::type val,typename cov::add_constant_reference<_ArgsT>::type...args)
-			:mCurrent(val),mForward(args...) {}
+		tuple(const _Tp& val,_ArgsT&&...args):mCurrent(val),mForward(std::forward<_ArgsT>(args)...) {}
 		~tuple()=default;
 		_Tp& get_current()
 		{
