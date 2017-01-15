@@ -20,7 +20,7 @@
 * Github: https://github.com/mikecovlee
 * Website: http://ldc.atd3.cn
 *
-* Version: 17.1.0
+* Version: 17.1.1
 */
 #include "./base.hpp"
 #include "./traits.hpp"
