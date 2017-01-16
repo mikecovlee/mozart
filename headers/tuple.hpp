@@ -130,7 +130,8 @@ namespace cov {
 		tuple<_ArgsT...> mForward;
 	public:
 		tuple()=default;
-		tuple(const _Tp& val,_ArgsT&&...args):mCurrent(val),mForward(std::forward<_ArgsT>(args)...) {}
+		template<typename T,typename...Args>
+		tuple(const T& val,Args&&...args):mCurrent(val),mForward(std::forward<Args>(args)...) {}
 		~tuple()=default;
 		_Tp& get_current()
 		{

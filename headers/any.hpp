@@ -23,6 +23,7 @@
 * Version: 17.1.0
 */
 #include "./base.hpp"
+#include <iostream>
 
 namespace std {
 	template<typename T> std::string to_string(const T&)
