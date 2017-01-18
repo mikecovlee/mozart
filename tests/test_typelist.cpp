@@ -5,7 +5,7 @@ template<typename T>struct is_pointer {
 template<typename T>struct is_pointer<T*> {
 	static constexpr bool value=true;
 };
-	
+
 int main()
 {
 	using A=typename cov::type_list::make<void>::result;
@@ -16,7 +16,7 @@ int main()
 	cov::type_list::iterator<B>::show();
 	printf("\n");
 
-	typename cov::type_list::get_type<0,B>::result i{10};
+	typename cov::type_list::get_type<0,B>::result i {10};
 	printf("%d\n",i);
 
 	using C=typename cov::type_list::push_front<A,int>::result;
@@ -50,7 +50,7 @@ int main()
 	using J=typename cov::type_list::remove<I,void>::result;
 	cov::type_list::iterator<J>::show();
 	printf("\n");
-	
+
 	using K=typename cov::type_list::make<void*,int*,float,double**,const char*>::result;
 	cov::type_list::iterator<K>::show();
 	printf("\n");

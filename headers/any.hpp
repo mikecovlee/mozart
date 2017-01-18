@@ -54,132 +54,108 @@ namespace cov {
 			holder() = default;
 			holder(const T& dat):mDat(dat) {}
 			virtual ~ holder() = default;
-			virtual const std::type_info & type() const override
-			{
+			virtual const std::type_info & type() const override {
 				return typeid(T);
 			}
-			virtual baseHolder *duplicate() override
-			{
+			virtual baseHolder *duplicate() override {
 				return new holder(mDat);
 			}
-			virtual bool compare(const baseHolder * obj)const override
-			{
+			virtual bool compare(const baseHolder * obj)const override {
 				if (obj->type() == this->type()) {
 					const holder < T > *ptr = dynamic_cast < const holder < T > *>(obj);
 					return ptr!=nullptr?mDat == ptr->data():false;
 				}
 				return false;
 			}
-			virtual std::string to_string() const override
-			{
+			virtual std::string to_string() const override {
 				return std::move(std::to_string(mDat));
 			}
-			T & data()
-			{
+			T & data() {
 				return mDat;
 			}
-			const T & data() const
-			{
+			const T & data() const {
 				return mDat;
 			}
-			void data(const T & dat)
-			{
+			void data(const T & dat) {
 				mDat = dat;
 			}
 		};
 		baseHolder * mDat=nullptr;
 	public:
 		static any infer_value(const std::string&);
-		void swap(any& obj) noexcept
-		{
+		void swap(any& obj) noexcept {
 			baseHolder* tmp=this->mDat;
 			this->mDat=obj.mDat;
 			obj.mDat=tmp;
 		}
-		void swap(any&& obj)
-		{
+		void swap(any&& obj) {
 			baseHolder* tmp=this->mDat;
 			this->mDat=obj.mDat;
 			obj.mDat=tmp;
 		}
-		bool usable() const noexcept
-		{
+		bool usable() const noexcept {
 			return mDat != nullptr;
 		}
 		any()=default;
 		template < typename T > any(const T & dat):mDat(new holder < T > (dat)) {}
 		any(const any & v):mDat(v.usable()?v.mDat->duplicate():nullptr) {}
-		any(any&& v) noexcept
-		{
+		any(any&& v) noexcept {
 			swap(std::forward<any>(v));
 		}
-		~any()
-		{
+		~any() {
 			delete mDat;
 		}
-		const std::type_info & type() const
-		{
+		const std::type_info & type() const {
 			return this->mDat != nullptr?this->mDat->type():typeid(void);
 		}
-		std::string to_string() const
-		{
+		std::string to_string() const {
 			if(this->mDat == nullptr)
 				throw cov::error("E0005");
 			return std::move(this->mDat->to_string());
 		}
-		any & operator=(const any & var)
-		{
+		any & operator=(const any & var) {
 			if(&var!=this) {
 				delete mDat;
 				mDat = var.usable()?var.mDat->duplicate():nullptr;
 			}
 			return *this;
 		}
-		any & operator=(any&& var) noexcept
-		{
+		any & operator=(any&& var) noexcept {
 			if(&var!=this)
 				swap(std::forward<any>(var));
 			return *this;
 		}
-		bool operator==(const any & var) const
-		{
+		bool operator==(const any & var) const {
 			return usable()?this->mDat->compare(var.mDat):!var.usable();
 		}
-		bool operator!=(const any & var)const
-		{
+		bool operator!=(const any & var)const {
 			return usable()?!this->mDat->compare(var.mDat):var.usable();
 		}
-		template < typename T > T & val()
-		{
+		template < typename T > T & val() {
 			if(typeid(T) != this->type())
 				throw cov::error("E0006");
 			if(this->mDat == nullptr)
 				throw cov::error("E0005");
 			return dynamic_cast < holder < T > *>(this->mDat)->data();
 		}
-		template < typename T > const T & val() const
-		{
+		template < typename T > const T & val() const {
 			if(typeid(T) != this->type())
 				throw cov::error("E0006");
 			if(this->mDat == nullptr)
 				throw cov::error("E0005");
 			return dynamic_cast < const holder < T > *>(this->mDat)->data();
 		}
-		template < typename T > operator T&()
-		{
+		template < typename T > operator T&() {
 			return this->val<T>();
 		}
-		template < typename T > operator const T&() const
-		{
+		template < typename T > operator const T&() const {
 			return this->val<T>();
 		}
-		template < typename T > void assign(const T & dat)
-		{
+		template < typename T > void assign(const T & dat) {
 			delete mDat;
 			mDat = new holder < T > (dat);
 		}
-		template < typename T > any & operator=(const T & dat)
-		{
+		template < typename T > any & operator=(const T & dat) {
 			assign(dat);
 			return *this;
 		}
@@ -201,7 +177,7 @@ cov::any cov::any::infer_value(const std::string& str)
 	if(str=="false"||str=="False"||str=="FALSE")
 		return false;
 	enum types {
-		interger,floating,other
+	    interger,floating,other
 	} type=types::interger;
 	for(auto& it:str) {
 		if(!std::isdigit(it)&&it!='.') {

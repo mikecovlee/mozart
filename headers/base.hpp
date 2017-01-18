@@ -43,13 +43,12 @@ namespace cov {
 		std::string mWhat="Covstdlib Warning";
 	public:
 		warning()=default;
-		warning(const std::string& str) noexcept:
-			mWhat("Covstdlib Warning:"+str) {}
+	warning(const std::string& str) noexcept:
+		mWhat("Covstdlib Warning:"+str) {}
 		warning(const warning&)=default;
 		warning(warning&&)=default;
 		virtual ~warning()=default;
-		virtual const char* what() const noexcept override
-		{
+		virtual const char* what() const noexcept override {
 			return this->mWhat.c_str();
 		}
 	};
@@ -57,15 +56,14 @@ namespace cov {
 		std::string mWhat="Covstdlib Error";
 	public:
 		error()=default;
-		error(const std::string& str) noexcept:
-			mWhat("Covstdlib Error:"+str) {}
+	error(const std::string& str) noexcept:
+		mWhat("Covstdlib Error:"+str) {}
 		error(const error&)=default;
 		error(error&&)=default;
 		virtual ~error()=default;
 		error& operator=(const error&)=default;
 		error& operator=(error&&)=default;
-		virtual const char* what() const noexcept override
-		{
+		virtual const char* what() const noexcept override {
 			return this->mWhat.c_str();
 		}
 	};
@@ -76,20 +74,16 @@ namespace cov {
 		object(object&&) noexcept=default;
 		object(const object&)=default;
 		virtual ~object()=default;
-		virtual std::type_index object_type() const noexcept final
-		{
+		virtual std::type_index object_type() const noexcept final {
 			return typeid(*this);
 		}
-		virtual std::string to_string() const noexcept
-		{
+		virtual std::string to_string() const noexcept {
 			return typeid(*this).name();
 		}
-		virtual object* clone() noexcept
-		{
+		virtual object* clone() noexcept {
 			return nullptr;
 		}
-		virtual bool equals(const object* ptr) const noexcept
-		{
+		virtual bool equals(const object* ptr) const noexcept {
 			return this==ptr;
 		}
 	};
