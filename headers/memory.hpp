@@ -27,24 +27,24 @@
 #include <memory>
 
 namespace cov {
-	template<typename _Tp,template<typename>typename _Alloc>
+	template<typename _Tp,template<typename>class _alloc>
 	struct _alloc_helper {
-		static _Alloc<_Tp> allocator;
+		static _alloc<_Tp> allocator;
 	};
-	template<typename _Tp,template<typename>typename _Alloc>
-	_Alloc<_Tp> _alloc_helper<_Tp,_Alloc>::allocator;
+	template<typename _Tp,template<typename>class _alloc>
+	_alloc<_Tp> _alloc_helper<_Tp,_alloc>::allocator;
 	template<typename _Tp,
-	         template<typename>typename _Alloc=std::allocator,
-	         template<typename>typename _Atomic=std::atomic>
+	         template<typename>class _alloc=std::allocator,
+	         template<typename>class _atomic=std::atomic>
 	class shared_ptr final {
 	public:
-		typedef _Atomic<unsigned long> counter;
+		typedef _atomic<unsigned long> counter;
 		typedef _Tp data_type;
 		typedef _Tp* raw_type;
 		typedef cov::function<void(raw_type)> deleter;
 	private:
 		class proxy final {
-			friend class shared_ptr<_Tp,_Alloc,_Atomic>;
+			friend class shared_ptr<_Tp,_alloc,_atomic>;
 			mutable counter ref_count;
 			deleter resolve;
 			raw_type data=nullptr;
@@ -55,51 +55,51 @@ namespace cov {
 				if(--ref_count==0) {
 					if(resolve.callable())
 						resolve(data);
-					_alloc_helper<data_type,_Alloc>::allocator.destroy(data);
-					_alloc_helper<data_type,_Alloc>::allocator.deallocate(data,1);
+					_alloc_helper<data_type,_alloc>::allocator.destroy(data);
+					_alloc_helper<data_type,_alloc>::allocator.deallocate(data,1);
 				}
 			}
 		};
 		proxy* mProxy;
 	public:
-		shared_ptr():mProxy(_alloc_helper<proxy,_Alloc>::allocator.allocate(1)) {
+		shared_ptr():mProxy(_alloc_helper<proxy,_alloc>::allocator.allocate(1)) {
 			mProxy->ref_count=1;
-			mProxy->data=_alloc_helper<data_type,_Alloc>::allocator.allocate(1);
-			_alloc_helper<data_type,_Alloc>::allocator.construct(mProxy->data);
+			mProxy->data=_alloc_helper<data_type,_alloc>::allocator.allocate(1);
+			_alloc_helper<data_type,_alloc>::allocator.construct(mProxy->data);
 		}
-		shared_ptr(const deleter& f):mProxy(_alloc_helper<proxy,_Alloc>::allocator.allocate(1)) {
+		shared_ptr(const deleter& f):mProxy(_alloc_helper<proxy,_alloc>::allocator.allocate(1)) {
 			mProxy->ref_count=1;
 			mProxy->deleter=f;
-			mProxy->data=_alloc_helper<data_type,_Alloc>::allocator.allocate(1);
-			_alloc_helper<data_type,_Alloc>::allocator.construct(mProxy->data);
+			mProxy->data=_alloc_helper<data_type,_alloc>::allocator.allocate(1);
+			_alloc_helper<data_type,_alloc>::allocator.construct(mProxy->data);
 		}
 		shared_ptr(const shared_ptr& ptr):mProxy(ptr.mProxy) {
 			mProxy->add_ref();
 		}
-		shared_ptr(const data_type& obj):mProxy(_alloc_helper<proxy,_Alloc>::allocator.allocate(1)) {
+		shared_ptr(const data_type& obj):mProxy(_alloc_helper<proxy,_alloc>::allocator.allocate(1)) {
 			mProxy->ref_count=1;
-			mProxy->data=_alloc_helper<_Tp,_Alloc>::allocator.allocate(1);
-			_alloc_helper<data_type,_Alloc>::allocator.construct(mProxy->data,obj);
+			mProxy->data=_alloc_helper<_Tp,_alloc>::allocator.allocate(1);
+			_alloc_helper<data_type,_alloc>::allocator.construct(mProxy->data,obj);
 		}
-		shared_ptr(const data_type& obj,const deleter& f):mProxy(_alloc_helper<proxy,_Alloc>::allocator.allocate(1)) {
+		shared_ptr(const data_type& obj,const deleter& f):mProxy(_alloc_helper<proxy,_alloc>::allocator.allocate(1)) {
 			mProxy->ref_count=1;
 			mProxy->deleter=f;
-			mProxy->data=_alloc_helper<_Tp,_Alloc>::allocator.allocate(1);
-			_alloc_helper<data_type,_Alloc>::allocator.construct(mProxy->data,obj);
+			mProxy->data=_alloc_helper<_Tp,_alloc>::allocator.allocate(1);
+			_alloc_helper<data_type,_alloc>::allocator.construct(mProxy->data,obj);
 		}
 		~shared_ptr() {
 			mProxy->cut_ref();
 			if(mProxy->ref_count==0) {
-				_alloc_helper<proxy,_Alloc>::allocator.destroy(mProxy);
-				_alloc_helper<proxy,_Alloc>::allocator.deallocate(mProxy,1);
+				_alloc_helper<proxy,_alloc>::allocator.destroy(mProxy);
+				_alloc_helper<proxy,_alloc>::allocator.deallocate(mProxy,1);
 			}
 		}
 		shared_ptr& operator=(const shared_ptr& ptr) {
 			if(&ptr!=this) {
 				mProxy->cut_ref();
 				if(mProxy->ref_count==0) {
-					_alloc_helper<proxy,_Alloc>::allocator.destroy(mProxy);
-					_alloc_helper<proxy,_Alloc>::allocator.deallocate(mProxy,1);
+					_alloc_helper<proxy,_alloc>::allocator.destroy(mProxy);
+					_alloc_helper<proxy,_alloc>::allocator.deallocate(mProxy,1);
 				}
 				mProxy=ptr.mProxy;
 				++mProxy->ref_count;
