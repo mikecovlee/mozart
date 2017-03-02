@@ -26,11 +26,11 @@
 #error E0001
 #endif
 
-#if __cplusplus < 201103L
+#if __cplusplus < 201402L
 #error E0002
 #endif
 
-#define __Mozart 170100L
+#define __Mozart 170101L
 
 #include <exception>
 #include <stdexcept>

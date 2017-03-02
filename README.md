@@ -31,7 +31,7 @@ W0001 标签类型与条件类型不同
 W0002 重复定义标签  
   
 E0001 Covariant Mozart Utility Library需要您的编译器支持C++编程语言。  
-E0002 Covariant Mozart Utility Library需要您的编译器支持C++11或者更高标准。请检查您否忘记了[-std=c++11]编译选项。  
+E0002 Covariant Mozart Utility Library需要您的编译器支持C++14或者更高标准。请检查您否忘记了[-std=c++11]编译选项。  
 E0003 对象不可执行。  
 E0004 使用空指针调用成员函数。  
 E0005 使用了未初始化的对象。  

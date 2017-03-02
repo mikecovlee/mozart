@@ -128,6 +128,7 @@ namespace cov
 			}
 		};
 		tree()=default;
+		tree(iterator it):mRoot(copy(it.mData)){}
 		tree(const tree& t):mRoot(copy(t.mRoot)){}
 		~tree(){destory(this->mRoot);}
 		bool empty() const noexcept{return this->mRoot==nullptr;}
@@ -155,21 +156,69 @@ namespace cov
 				throw std::logic_error("Use of final tree node.");
 			return iterator(new tree_node{T(args...),it.mData->root,nullptr,it->mData});
 		}
-		template<typename...Args>iterator emplace_left(iterator it,Args&&...args)
+		template<typename...Args>iterator emplace_left_left(iterator it,Args&&...args)
 		{
 			if(!it.usable())
 				throw std::logic_error("Use of final tree node.");
-			tree_node* node=new tree_node{T(args...),it.mData->root,nullptr,nullptr};
+			tree_node* node=new tree_node{T(args...),it.mData->root,it.mData->left,nullptr};
+			if(it.mData->left!=nullptr)
+				it.mData->left->root=node;
 			it.mData->left=node;
 			return iterator(node);
 		}
-		template<typename...Args>iterator emplace_right(iterator it,Args&&...args)
+		template<typename...Args>iterator emplace_left_right(iterator it,Args&&...args)
 		{
 			if(!it.usable())
 				throw std::logic_error("Use of final tree node.");
-			tree_node* node=new tree_node{T(args...),it.mData->root,nullptr,nullptr};
+			tree_node* node=new tree_node{T(args...),it.mData->root,nullptr,it.mData->left};
+			if(it.mData->left!=nullptr)
+				it.mData->left->root=node;
+			it.mData->left=node;
+			return iterator(node);
+		}
+		template<typename...Args>iterator emplace_right_left(iterator it,Args&&...args)
+		{
+			if(!it.usable())
+				throw std::logic_error("Use of final tree node.");
+			tree_node* node=new tree_node{T(args...),it.mData->root,it.mData->right,nullptr};
+			if(it.mData->right!=nullptr)
+				it.mData->right->root=node;
 			it.mData->right=node;
 			return iterator(node);
+		}
+		template<typename...Args>iterator emplace_right_right(iterator it,Args&&...args)
+		{
+			if(!it.usable())
+				throw std::logic_error("Use of final tree node.");
+			tree_node* node=new tree_node{T(args...),it.mData->root,nullptr,it.mData->right};
+			if(it.mData->right!=nullptr)
+				it.mData->right->root=node;
+			it.mData->right=node;
+			return iterator(node);
+		}
+		iterator remove(iterator it)
+		{
+			if(!it.usable())
+				throw std::logic_error("Use of final tree node.");
+			iterator root(it.mData->root);
+			destory(it.mData);
+			return root;
+		}
+		iterator remove_left(iterator it)
+		{
+			if(!it.usable())
+				throw std::logic_error("Use of final tree node.");
+			destory(it.mData->left);
+			it.mData->left=nullptr;
+			return it;
+		}
+		iterator remove_right(iterator it)
+		{
+			if(!it.usable())
+				throw std::logic_error("Use of final tree node.");
+			destory(it.mData->right);
+			it.mData->right=nullptr;
+			return it;
 		}
 	};
 }
