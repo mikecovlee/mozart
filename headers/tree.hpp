@@ -120,7 +120,7 @@ namespace cov
 					throw std::logic_error("Use of final tree node.");
 				return const_iterator(this->mData->left);
 			}
-			const iterator right() const
+			const_iterator right() const
 			{
 				if(!this->usable())
 					throw std::logic_error("Use of final tree node.");
