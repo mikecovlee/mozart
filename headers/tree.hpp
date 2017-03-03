@@ -148,19 +148,39 @@ namespace cov
 		{
 			if(!it.usable())
 				throw std::logic_error("Use of final tree node.");
-			return iterator(new tree_node{T(args...),it.mData->root,it->mData,nullptr});
+			if(it.mData==mRoot)
+			{
+				mRoot=new tree_node{T(args...),nullptr,mRoot,nullptr};
+				return iterator(mRoot);
+			}
+			tree_node* node=new tree_node{T(args...),it.mData->root,it.mData,nullptr};
+			if(it.mData->root->left==it.mData)
+				it.mData->root->left=node;
+			else
+				it.mData->root->right=node;
+			return iterator(node);
 		}
 		template<typename...Args>iterator emplace_root_right(iterator it,Args&&...args)
 		{
 			if(!it.usable())
 				throw std::logic_error("Use of final tree node.");
-			return iterator(new tree_node{T(args...),it.mData->root,nullptr,it->mData});
+			if(it.mData==mRoot)
+			{
+				mRoot=new tree_node{T(args...),nullptr,nullptr,mRoot};
+				return iterator(mRoot);
+			}
+			tree_node* node=new tree_node{T(args...),it.mData->root,nullptr,it.mData};
+			if(it.mData->root->left==it.mData)
+				it.mData->root->left=node;
+			else
+				it.mData->root->right=node;
+			return iterator(node);
 		}
 		template<typename...Args>iterator emplace_left_left(iterator it,Args&&...args)
 		{
 			if(!it.usable())
 				throw std::logic_error("Use of final tree node.");
-			tree_node* node=new tree_node{T(args...),it.mData->root,it.mData->left,nullptr};
+			tree_node* node=new tree_node{T(args...),it.mData,it.mData->left,nullptr};
 			if(it.mData->left!=nullptr)
 				it.mData->left->root=node;
 			it.mData->left=node;
@@ -170,7 +190,7 @@ namespace cov
 		{
 			if(!it.usable())
 				throw std::logic_error("Use of final tree node.");
-			tree_node* node=new tree_node{T(args...),it.mData->root,nullptr,it.mData->left};
+			tree_node* node=new tree_node{T(args...),it.mData,nullptr,it.mData->left};
 			if(it.mData->left!=nullptr)
 				it.mData->left->root=node;
 			it.mData->left=node;
@@ -180,7 +200,7 @@ namespace cov
 		{
 			if(!it.usable())
 				throw std::logic_error("Use of final tree node.");
-			tree_node* node=new tree_node{T(args...),it.mData->root,it.mData->right,nullptr};
+			tree_node* node=new tree_node{T(args...),it.mData,it.mData->right,nullptr};
 			if(it.mData->right!=nullptr)
 				it.mData->right->root=node;
 			it.mData->right=node;
@@ -190,7 +210,7 @@ namespace cov
 		{
 			if(!it.usable())
 				throw std::logic_error("Use of final tree node.");
-			tree_node* node=new tree_node{T(args...),it.mData->root,nullptr,it.mData->right};
+			tree_node* node=new tree_node{T(args...),it.mData,nullptr,it.mData->right};
 			if(it.mData->right!=nullptr)
 				it.mData->right->root=node;
 			it.mData->right=node;

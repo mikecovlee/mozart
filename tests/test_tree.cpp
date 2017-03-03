@@ -37,9 +37,10 @@ int main()
 	tree.emplace_right_right(tree.root(),14);
 	tree.emplace_left_left(tree.root().left(),16);
 	tree.emplace_right_right(tree.root().right(),18);
+	tree.emplace_root_left(tree.root().left(),20);
+	print_tree(tree.root());
 	cov::tree<foo> tree_copy=tree;
 	tree_copy.remove_right(tree_copy.root());
 	print_tree(tree_copy.root());
-	print_tree(tree.root());
 	return 0;
 }
