@@ -22,7 +22,7 @@ I am a Chinese guy.My English is very poor.So I can't complete this reference by
 Please contact me if you want to help me translate this guide.Thanks!*  
 
 E0001 Covariant Mozart Utility Library need your compiler support C++ Programming Launguage.  
-E0002 Covariant Mozart Utility Library need your compiler support C++14 or higher standard.  
+E0002 Covariant Mozart Utility Library need your compiler support C++11 or higher standard.  
 E0003 Target is not a function object.  
 E0004 Call member function with null pointer.  
 
@@ -31,7 +31,7 @@ W0001 标签类型与条件类型不同
 W0002 重复定义标签  
   
 E0001 Covariant Mozart Utility Library需要您的编译器支持C++编程语言。  
-E0002 Covariant Mozart Utility Library需要您的编译器支持C++14或者更高标准。请检查您否忘记了[-std=c++11]编译选项。  
+E0002 Covariant Mozart Utility Library需要您的编译器支持C++11或者更高标准。请检查您否忘记了[-std=c++11]编译选项。  
 E0003 对象不可执行。  
 E0004 使用空指针调用成员函数。  
 E0005 使用了未初始化的对象。  
@@ -42,6 +42,7 @@ E0009 参数数量错误。
 E000A 不支持接收任何参数。  
 E000B 类型匹配失败。  
 E000D 不支持指定类型向std::string的转换  
+E000E 树节点为空  
 
 **Covariant Studio保留对本指南所有条目的解释权**  
 **版权所有，盗版必究。**  
