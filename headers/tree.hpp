@@ -66,6 +66,8 @@ namespace cov {
 			iterator(const iterator&)=default;
 			iterator(iterator&&) noexcept=default;
 			~iterator()=default;
+			iterator& operator=(const iterator&)=default;
+			iterator& operator=(iterator&&) noexcept=default;
 			bool usable() const noexcept
 			{
 				return this->mData!=nullptr;
@@ -111,6 +113,8 @@ namespace cov {
 			const_iterator(const const_iterator&)=default;
 			const_iterator(const_iterator&&) noexcept=default;
 			~const_iterator()=default;
+			const_iterator& operator=(const const_iterator&)=default;
+			const_iterator& operator=(const_iterator&&) noexcept=default;
 			bool usable() const noexcept
 			{
 				return this->mData!=nullptr;
