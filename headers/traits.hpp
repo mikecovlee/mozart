@@ -76,17 +76,19 @@ namespace cov {
 	template<typename Tx,typename Ty>struct replace_if<false,Tx,Ty> {
 		using result=Tx;
 	};
-	template<typename _Tp,typename _dT>
+	template<typename From,typename To>
 	class castable final {
-		template<typename T>static constexpr bool helper(T*)
+		template<typename To1>static void test(To1);
+		template<typename From1,typename To1>static constexpr bool helper(...)
 		{
 			return false;
 		}
-		template<typename T>static constexpr bool helper(decltype(static_cast<_Tp>(std::declval<T>()))*)
+		template<typename From1,typename To1,typename=decltype(test<To1>(std::declval<From1>()))>
+		static constexpr bool helper(int)
 		{
 			return true;
 		}
 	public:
-		static constexpr bool value=helper<_dT>(nullptr);
+		static constexpr bool value=helper<From,To>(0);
 	};
 }
