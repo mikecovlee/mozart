@@ -20,7 +20,7 @@
 * Github: https://github.com/mikecovlee
 * Website: http://ldc.atd3.cn
 *
-* Version: 17.1.0
+* Version: 17.2.0
 */
 namespace cov {
 	template < typename T, typename X > struct is_same_type {
@@ -74,5 +74,18 @@ namespace cov {
 	};
 	template<typename Tx,typename Ty>struct replace_if<false,Tx,Ty> {
 		using result=Tx;
+	};
+	template<typename _Tp,typename _dT>
+	class castable final {
+		template<typename T>static constexpr bool helper(T*)
+		{
+			return false;
+		}
+		template<typename T>static constexpr bool helper(decltype(static_cast<_Tp>(std::declval<T>()))*)
+		{
+			return true;
+		}
+	public:
+		static constexpr bool value=helper<_dT>(nullptr);
 	};
 }
