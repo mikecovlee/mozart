@@ -22,6 +22,7 @@
 *
 * Version: 17.2.0
 */
+#include <utility>
 namespace cov {
 	template < typename T, typename X > struct is_same_type {
 		static constexpr bool value=false;
