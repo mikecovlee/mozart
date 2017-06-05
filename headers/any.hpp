@@ -16,34 +16,16 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 * Copyright (C) 2017 Michael Lee(李登淳)
-* Email: China-LDC@outlook.com
+* Email: mikecovlee@163.com
 * Github: https://github.com/mikecovlee
-* Website: http://ldc.atd3.cn
 *
-* Version: 17.5.2
+* Version: 17.6.1
 */
 #include "./base.hpp"
 #include "./memory.hpp"
 #include <functional>
-#include <iostream>
+#include <ostream>
 
-namespace std {
-	template<typename T> std::string to_string(const T&)
-	{
-		throw cov::error("E000D");
-	}
-	template<> std::string to_string<std::string>(const std::string& str)
-	{
-		return str;
-	}
-	template<> std::string to_string<bool>(const bool& v)
-	{
-		if(v)
-			return "true";
-		else
-			return "false";
-	}
-}
 #define COV_ANY_POOL_SIZE 96
 namespace cov {
 	template<typename _Tp> class compare_helper {
@@ -57,7 +39,7 @@ namespace cov {
 			return true;
 		}
 	public:
-		static constexpr bool value = match < _Tp > (nullptr);
+		static constexpr bool value = match<_Tp>(nullptr);
 	};
 	template<typename,bool> struct compare_if;
 	template<typename T>struct compare_if<T,true> {
@@ -76,6 +58,36 @@ namespace cov {
 	{
 		return compare_if<T,compare_helper<T>::value>::compare(a,b);
 	}
+	template<typename _Tp> class to_string_helper {
+		template<typename T,typename X>struct matcher;
+		template<typename T> static constexpr bool match(T*)
+		{
+			return false;
+		}
+		template<typename T> static constexpr bool match(matcher<T,decltype(std::to_string(std::declval<T>()))>*)
+		{
+			return true;
+		}
+	public:
+		static constexpr bool value = match<_Tp>(nullptr);
+	};
+	template<typename,bool> struct to_string_if;
+	template<typename T>struct to_string_if<T,true> {
+		static std::string to_string(const T& val)
+		{
+			return std::to_string(val);
+		}
+	};
+	template<typename T>struct to_string_if<T,false> {
+		static std::string to_string(const T&)
+		{
+			throw cov::error("E000D");
+		}
+	};
+	template<typename T>std::string to_string(const T& val)
+	{
+		return to_string_if<T,to_string_helper<T>::value>::to_string(val);
+	}
 	template<typename _Tp> class hash_helper {
 		template<typename T,decltype(&std::hash<T>::operator()) X>struct matcher;
 		template<typename T> static constexpr bool match(T*)
@@ -87,7 +99,7 @@ namespace cov {
 			return true;
 		}
 	public:
-		static constexpr bool value = match < _Tp > (nullptr);
+		static constexpr bool value = match<_Tp>(nullptr);
 	};
 	template<typename,bool> struct hash_if;
 	template<typename T>struct hash_if<T,true> {
@@ -124,7 +136,7 @@ namespace cov {
 			virtual void detach() = 0;
 			virtual void kill() = 0;
 		};
-		template < typename T > class holder:public baseHolder {
+		template<typename T>class holder:public baseHolder {
 		protected:
 			T mDat;
 		public:
@@ -150,7 +162,7 @@ namespace cov {
 			}
 			virtual std::string to_string() const override
 			{
-				return std::to_string(mDat);
+				return cov::to_string(mDat);
 			}
 			virtual std::size_t hash() const override
 			{
@@ -212,7 +224,7 @@ namespace cov {
 		}
 		any(proxy* dat):mDat(dat) {}
 	public:
-		void swap(any& obj,bool raw=false) noexcept
+		void swap(any& obj,bool raw=false)
 		{
 			if(this->mDat!=nullptr&&obj.mDat!=nullptr&&raw) {
 				if(this->mDat->constant||obj.mDat->constant)
@@ -231,7 +243,7 @@ namespace cov {
 		{
 			if(this->mDat!=nullptr&&obj.mDat!=nullptr&&raw) {
 				if(this->mDat->constant||obj.mDat->constant)
-					throw cov::error("E000G");
+					std::terminate();
 				baseHolder* tmp=this->mDat->data;
 				this->mDat->data=obj.mDat->data;
 				obj.mDat->data=tmp;
@@ -242,11 +254,11 @@ namespace cov {
 				obj.mDat=tmp;
 			}
 		}
-		void clone() noexcept
+		void clone()
 		{
 			if(mDat!=nullptr) {
 				if(mDat->constant)
-					throw cov::error("E000H");
+					throw cov::error("E000G");
 				proxy* dat=allocator.alloc(1,mDat->data->duplicate());
 				recycle();
 				mDat=dat;
@@ -295,7 +307,7 @@ namespace cov {
 		{
 			if(this->mDat!=nullptr) {
 				if(this->mDat->constant)
-					throw cov::error("E000I");
+					throw cov::error("E000G");
 				this->mDat->data->detach();
 			}
 		}
@@ -396,6 +408,17 @@ namespace cov {
 			return *this;
 		}
 	};
+	template<> std::string to_string<std::string>(const std::string& str)
+	{
+		return str;
+	}
+	template<> std::string to_string<bool>(const bool& v)
+	{
+		if(v)
+			return "true";
+		else
+			return "false";
+	}
 	template<typename T> cov::allocator<any::holder<T>,COV_ANY_POOL_SIZE> any::holder<T>::allocator;
 	cov::allocator<any::proxy,COV_ANY_POOL_SIZE> any::allocator;
 	template<int N> class any::holder<char[N]>:public any::holder<std::string> {
