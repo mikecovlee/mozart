@@ -38,6 +38,8 @@ E000D Does not support conversion of the specified type to `std::string`
 E000E Tree node is empty  
 E000F Does not support the specified type of hash operation  
 E000G Constant tagged objects can not be copied  
+E000H Stack is empty  
+E000I Stack overflow  
 
 ##### 简体中文:
 W0001 标签类型与条件类型不同  
@@ -59,4 +61,4 @@ E000E 树节点为空
 E000F 不支持指定类型的hash操作  
 E000G 常量标记的对象不可复制  
 E000H 栈为空  
-E000I 栈溢出
+E000I 栈溢出  
