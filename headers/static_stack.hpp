@@ -68,5 +68,5 @@ namespace cov {
 			else
 				throw cov::error("E000H");
 		}
-	}
+	};
 }
