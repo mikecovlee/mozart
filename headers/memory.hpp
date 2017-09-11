@@ -388,10 +388,11 @@ namespace cov {
 		}
 		void compress()
 		{
-			// Sort the spaces by address.
-			sort_by_addr();
+
 			std::list<byte*> new_list;
 			byte* ptr=nullptr;
+			// Sort the spaces by address.
+			sort_by_addr();
 			// Compress the free list.
 			for(auto p:free_list) {
 				if(ptr!=nullptr) {
@@ -408,14 +409,18 @@ namespace cov {
 					ptr=p;
 			}
 			// Connect the final space and remain spaces.
-			get_size(ptr)+=hl-hp;
-			hp=hl;
-			new_list.push_back(ptr);
+			if(ptr!=nullptr) {
+				if(ptr+get_size(ptr)+sizeof(size_t)==hp)
+					hp=ptr;
+				else
+					new_list.push_back(ptr);
+			}
 			// Swap the new list and old list.
 			std::swap(new_list,free_list);
 		}
-		void* find_in_free_list(size_t size)
+		void* allocate(size_t size)
 		{
+			// Try to find usable spaces in free list
 			if(!free_list.empty()) {
 				switch(policy) {
 				case allocate_policy::first_fit:
@@ -439,6 +444,13 @@ namespace cov {
 					return ptr;
 				}
 			}
+			// Checkout remain spaces,if enough,return.
+			if(hl-hp>=size+sizeof(size_t)) {
+				get_size(hp)=size;
+				void* ptr=reinterpret_cast<void*>(hp+sizeof(size_t));
+				hp+=size+sizeof(size_t);
+				return ptr;
+			}
 			return nullptr;
 		}
 	public:
@@ -455,23 +467,16 @@ namespace cov {
 		}
 		void* malloc(size_t size)
 		{
-			// Try to find usable spaces in free list
-			void* ptr=find_in_free_list(size);
-			// If found,return.
+			// Try to allocate.
+			void* ptr=allocate(size);
+			// If successed,return
 			if(ptr!=nullptr)
 				return ptr;
-			// Checkout remain spaces,if enough,return.
-			if(hl-hp>=size+sizeof(size_t)) {
-				get_size(hp)=size;
-				ptr=reinterpret_cast<void*>(hp+sizeof(size_t));
-				hp+=size+sizeof(size_t);
-				return ptr;
-			}
 			// Compress the memory spaces
 			compress();
-			// Try to find usable spaces in free list again.
-			ptr=find_in_free_list(size);
-			// If found,return.
+			// Try to allocate again.
+			ptr=allocate(size);
+			// If successed,return.
 			if(ptr!=nullptr)
 				return ptr;
 			else // There have no usable spaces,throw bad alloc exception.
