@@ -153,9 +153,9 @@ namespace cov {
 		}
 	};
 
-	template<typename T, long blck_size>
+	template<typename T, long blck_size, template<typename>class allocator_t=std::allocator>
 	class allocator final {
-		std::allocator<T> mAlloc;
+		allocator_t<T> mAlloc;
 		std::array<T *, blck_size> mPool;
 		long mOffset = -1;
 	public:
@@ -456,7 +456,7 @@ namespace cov {
 	public:
 		heap()=delete;
 		heap(const heap&)=delete;
-		explicit heap(size_t size,allocate_policy p=allocate_policy::best_fit):hs(::malloc(size)),policy(p)
+		explicit heap(size_t size,allocate_policy p=allocate_policy::first_fit):hs(::malloc(size)),policy(p)
 		{
 			hp=reinterpret_cast<byte*>(hs);
 			hl=hp+size;
