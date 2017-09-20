@@ -19,7 +19,7 @@
 * Email: mikecovlee@163.com
 * Github: https://github.com/mikecovlee
 *
-* Version: 17.1.0
+* Version: 17.9.1
 */
 #include "./base.hpp"
 #include "./traits.hpp"
@@ -79,7 +79,7 @@ namespace cov {
 
 		virtual function_base *copy() const =0;
 
-		virtual _rT call(_ArgsT &&...) const =0;
+		virtual _rT call(_ArgsT...) const =0;
 	};
 
 	template<typename _Tp>
@@ -90,9 +90,9 @@ namespace cov {
 
 		template<typename..._ArgsT>
 		decltype(std::declval<_Tp>()(std::declval<_ArgsT>()...))
-		call(_ArgsT &&...args)
+		call(_ArgsT...args)
 		{
-			return function(std::forward<_ArgsT>(args)...);
+			return std::move(function(std::forward<_ArgsT>(args)...));
 		}
 	};
 
@@ -108,9 +108,9 @@ namespace cov {
 	public:
 		function_index(type func) : function(func) {}
 
-		virtual _rT call(Args &&...args) const override
+		virtual _rT call(Args...args) const override
 		{
-			return function(std::forward<Args>(args)...);
+			return std::move(function(std::forward<Args>(args)...));
 		}
 
 		virtual function_base<common_type> *copy() const override
@@ -133,9 +133,9 @@ namespace cov {
 
 		virtual ~function_index() = default;
 
-		virtual _rT call(_Tp &obj, Args &&...args) const override
+		virtual _rT call(_Tp &obj, Args...args) const override
 		{
-			return (obj.*function)(std::forward<Args>(args)...);
+			return std::move((obj.*function)(std::forward<Args>(args)...));
 		}
 
 		virtual function_base<common_type> *copy() const override
@@ -158,9 +158,9 @@ namespace cov {
 
 		virtual ~function_index() = default;
 
-		virtual _rT call(const _Tp &obj, Args &&...args) const override
+		virtual _rT call(const _Tp &obj, Args...args) const override
 		{
-			return (obj.*function)(std::forward<Args>(args)...);
+			return std::move((obj.*function)(std::forward<Args>(args)...));
 		}
 
 		virtual function_base<common_type> *copy() const override
@@ -184,9 +184,9 @@ namespace cov {
 
 		virtual ~executor_index() = default;
 
-		virtual _rT call(_ArgsT &&...args) const override
+		virtual _rT call(_ArgsT...args) const override
 		{
-			return (object.*function)(std::forward<_ArgsT>(args)...);
+			return std::move((object.*function)(std::forward<_ArgsT>(args)...));
 		}
 
 		virtual function_base<common_type> *copy() const override
@@ -210,9 +210,9 @@ namespace cov {
 
 		virtual ~executor_index() = default;
 
-		virtual _rT call(_ArgsT &&...args) const override
+		virtual _rT call(_ArgsT...args) const override
 		{
-			return (object.*function)(std::forward<_ArgsT>(args)...);
+			return std::move((object.*function)(std::forward<_ArgsT>(args)...));
 		}
 
 		virtual function_base<common_type> *copy() const override
@@ -316,18 +316,18 @@ namespace cov {
 			delete mFunc;
 		}
 
-		_rT call(ArgsT &&...args) const
+		_rT call(ArgsT...args) const
 		{
 			if (!callable())
 				throw cov::error("E0005");
-			return mFunc->call(std::forward<ArgsT>(args)...);
+			return std::move(mFunc->call(std::forward<ArgsT>(args)...));
 		}
 
-		_rT operator()(typename add_reference<ArgsT>::type...args) const
+		_rT operator()(ArgsT...args) const
 		{
 			if (!callable())
 				throw cov::error("E0005");
-			return mFunc->call(std::forward<ArgsT>(args)...);
+			return std::move(mFunc->call(std::forward<ArgsT>(args)...));
 		}
 
 		template<typename _Tp>

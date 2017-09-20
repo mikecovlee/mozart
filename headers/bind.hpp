@@ -73,7 +73,7 @@ namespace cov {
 		using func_t=cov::function<typename cov::function_parser<F>::type::common_type>;
 		using args_t=typename cov::type_list::make<Args...>::result;
 		F mFunc;
-		cov::tuple<Args...> mArgs;
+		cov::tuple<typename cov::remove_reference<Args>::type...> mArgs;
 
 		template<typename...ArgsT, int...S>
 		typename resolver<typename cov::function_parser<F>::type::common_type>::return_type _call(cov::tuple<ArgsT...> &t, sequence<S...>)
@@ -93,7 +93,7 @@ namespace cov {
 		template<typename...ArgsT>
 		typename resolver<typename cov::function_parser<F>::type::common_type>::return_type operator()(ArgsT &&...args)
 		{
-			cov::tuple<ArgsT...> t(std::forward<ArgsT>(args)...);
+			cov::tuple<typename cov::remove_reference<ArgsT>::type...> t(std::forward<ArgsT>(args)...);
 			return _call(t, make_sequence<cov::type_list::get_size<args_t>::result>::result);
 		}
 
