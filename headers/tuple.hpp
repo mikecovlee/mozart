@@ -122,7 +122,9 @@ namespace cov {
 	public:
 		tuple() = default;
 
-		tuple(const _Tp &val) : mCurrent(val) {}
+		tuple(const tuple&) = default;
+
+		explicit tuple(typename cov::forward<_Tp>::type val) : mCurrent(val) {}
 
 		~tuple() = default;
 
@@ -169,8 +171,9 @@ namespace cov {
 	public:
 		tuple() = default;
 
-		template<typename T, typename...Args>
-		tuple(const T &val, Args &&...args):mCurrent(val), mForward(std::forward<Args>(args)...) {}
+		tuple(const tuple&) = default;
+
+		explicit tuple(typename cov::forward<_Tp>::type val, typename cov::forward<_ArgsT>::type...args):mCurrent(val), mForward(std::forward<typename cov::forward<_ArgsT>::type>(args)...) {}
 
 		~tuple() = default;
 

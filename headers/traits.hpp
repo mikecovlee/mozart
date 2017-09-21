@@ -41,6 +41,22 @@ namespace cov {
 		static constexpr bool value = true;
 	};
 	template<typename _Tp>
+	struct forward {
+		typedef const _Tp &type;
+	};
+	template<typename _Tp>
+	struct forward<_Tp &> {
+		typedef _Tp &type;
+	};
+	template<typename _Tp>
+	struct forward<_Tp &&> {
+		typedef _Tp &&type;
+	};
+	template<typename _Tp>
+	struct forward<_Tp *> {
+		typedef _Tp *type;
+	};
+	template<typename _Tp>
 	struct add_reference {
 		typedef _Tp &type;
 	};

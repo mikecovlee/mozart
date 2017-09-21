@@ -43,13 +43,13 @@ namespace cov {
 	};
 
 	template<typename T, typename...Args>
-	T &select(T &dat, cov::tuple<Args...> &t)
+	T &&select(T &&dat, cov::tuple<Args...> &t)
 	{
 		return dat;
 	}
 
 	template<int N, typename...Args>
-	auto select(placeholder<N> &ph, cov::tuple<Args...> &t) -> typename cov::add_reference<typename cov::tuple_random_iterator<N - 1, Args...>::type>::type
+	auto select(placeholder<N> &ph, cov::tuple<Args...> &t) -> typename cov::tuple_random_iterator<N - 1, Args...>::type
 	{
 		return cov::tuple_random_iterator<N - 1, Args...>::get(t);
 	}
@@ -93,7 +93,7 @@ namespace cov {
 		template<typename...ArgsT>
 		typename resolver<typename cov::function_parser<F>::type::common_type>::return_type operator()(ArgsT &&...args)
 		{
-			cov::tuple<typename cov::remove_reference<ArgsT>::type...> t(std::forward<ArgsT>(args)...);
+			cov::tuple<ArgsT...> t(std::forward<ArgsT>(args)...);
 			return _call(t, make_sequence<cov::type_list::get_size<args_t>::result>::result);
 		}
 
@@ -109,14 +109,14 @@ namespace cov {
 		return bind_t<F, Args...>(func, std::forward<Args>(args)...);
 	}
 
-	extern placeholder<1> _1;
-	extern placeholder<2> _2;
-	extern placeholder<3> _3;
-	extern placeholder<4> _4;
-	extern placeholder<5> _5;
-	extern placeholder<6> _6;
-	extern placeholder<7> _7;
-	extern placeholder<8> _8;
-	extern placeholder<9> _9;
-	extern placeholder<10> _10;
+	static placeholder<1> _1;
+	static placeholder<2> _2;
+	static placeholder<3> _3;
+	static placeholder<4> _4;
+	static placeholder<5> _5;
+	static placeholder<6> _6;
+	static placeholder<7> _7;
+	static placeholder<8> _8;
+	static placeholder<9> _9;
+	static placeholder<10> _10;
 }
