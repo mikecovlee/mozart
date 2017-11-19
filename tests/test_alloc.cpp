@@ -1,6 +1,6 @@
 #include <iostream>
-#include "../headers/memory.hpp"
-#include "../headers/timer.hpp"
+#include "../mozart/memory.hpp"
+#include "../mozart/timer.hpp"
 int main()
 {
 	cov::allocator<int,64> alloc;

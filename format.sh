@@ -1,6 +1,6 @@
-rm -rf ./headers/*.gch
+rm -rf ./mozart/*.gch
 rm -rf ./tests/*.gch
-astyle -A4 -N -t ./headers/*
+astyle -A4 -N -t ./mozart/*
 astyle -A4 -N -t ./tests/*
-rm -rf ./headers/*.orig
+rm -rf ./mozart/*.orig
 rm -rf ./tests/*.orig

@@ -19,7 +19,7 @@
 * Email: mikecovlee@163.com
 * Github: https://github.com/mikecovlee
 *
-* Version: 17.9.1
+* Version: 17.1.1
 */
 #include "./base.hpp"
 #include "./traits.hpp"
@@ -122,9 +122,7 @@ namespace cov {
 	public:
 		tuple() = default;
 
-		tuple(const tuple&) = default;
-
-		explicit tuple(typename cov::forward<_Tp>::type val) : mCurrent(val) {}
+		tuple(const _Tp &val) : mCurrent(val) {}
 
 		~tuple() = default;
 
@@ -171,9 +169,8 @@ namespace cov {
 	public:
 		tuple() = default;
 
-		tuple(const tuple&) = default;
-
-		explicit tuple(typename cov::forward<_Tp>::type val, typename cov::forward<_ArgsT>::type...args):mCurrent(val), mForward(std::forward<typename cov::forward<_ArgsT>::type>(args)...) {}
+		template<typename T, typename...Args>
+		tuple(const T &val, Args &&...args):mCurrent(val), mForward(std::forward<Args>(args)...) {}
 
 		~tuple() = default;
 
@@ -204,7 +201,8 @@ namespace cov {
 		}
 
 		template<int N>
-		typename cov::add_constant_reference<typename tuple_random_iterator<N, _Tp, _ArgsT...>::type>::type get() const
+		typename cov::add_constant_reference<typename tuple_random_iterator<N, _Tp, _ArgsT...>::type>::type
+		get() const
 		{
 			return tuple_random_iterator<N, _Tp, _ArgsT...>::get(*this);
 		}

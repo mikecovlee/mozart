@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../headers/switcher.hpp"
+#include "../mozart/switcher.hpp"
 int main()
 {
 	std::string str;
