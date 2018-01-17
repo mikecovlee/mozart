@@ -15,11 +15,11 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
-* Copyright (C) 2017 Michael Lee(李登淳)
+* Copyright (C) 2018 Michael Lee(李登淳)
 * Email: mikecovlee@163.com
 * Github: https://github.com/mikecovlee
 *
-* Version: 17.6.1
+* Version: 18.1.1
 */
 #include "./base.hpp"
 #include <utility>
@@ -57,11 +57,11 @@ namespace cov {
 			return node;
 		}
 
-		static void destory(tree_node *raw)
+		static void destroy(tree_node *raw)
 		{
 			if (raw != nullptr) {
-				destory(raw->left);
-				destory(raw->right);
+				destroy(raw->left);
+				destroy(raw->right);
 				delete raw;
 			}
 		}
@@ -211,13 +211,15 @@ namespace cov {
 
 		~tree()
 		{
-			destory(this->mRoot);
+			destroy(this->mRoot);
 		}
 
 		tree &operator=(const tree &t)
 		{
-			destory(this->mRoot);
-			this->mRoot = copy(t.mRoot);
+			if (&t != this) {
+				destroy(this->mRoot);
+				this->mRoot = copy(t.mRoot);
+			}
 			return *this;
 		}
 
@@ -229,8 +231,10 @@ namespace cov {
 
 		void assign(const tree &t)
 		{
-			destory(this->mRoot);
-			this->mRoot = copy(t.mRoot);
+			if (&t != this) {
+				destroy(this->mRoot);
+				this->mRoot = copy(t.mRoot);
+			}
 		}
 
 		bool empty() const noexcept
@@ -240,7 +244,7 @@ namespace cov {
 
 		void clear()
 		{
-			destory(this->mRoot);
+			destroy(this->mRoot);
 			this->mRoot = nullptr;
 		}
 
@@ -272,6 +276,7 @@ namespace cov {
 				it.mData->root->left = node;
 			else
 				it.mData->root->right = node;
+			it.mData.root = node;
 			return node;
 		}
 
@@ -288,6 +293,7 @@ namespace cov {
 				it.mData->root->left = node;
 			else
 				it.mData->root->right = node;
+			it.mData.root = node;
 			return node;
 		}
 
@@ -349,6 +355,7 @@ namespace cov {
 				it.mData->root->left = node;
 			else
 				it.mData->root->right = node;
+			it.mData->root = node;
 			return node;
 		}
 
@@ -366,6 +373,7 @@ namespace cov {
 				it.mData->root->left = node;
 			else
 				it.mData->root->right = node;
+			it.mData->root = node;
 			return node;
 		}
 
@@ -421,16 +429,67 @@ namespace cov {
 		{
 			if (!it.usable())
 				throw cov::error("E000E");
-			iterator root(it.mData->root);
-			destory(it.mData);
+			if (it.mData == mRoot) {
+				destroy(mRoot);
+				mRoot = nullptr;
+				return nullptr;
+			}
+			tree_node *root = it.mData->root;
+			if (root != nullptr) {
+				if (it.mData == root->left)
+					root->left = nullptr;
+				else
+					root->right = nullptr;
+			}
+			destroy(it.mData);
 			return root;
+		}
+
+		iterator reserve_left(iterator it)
+		{
+			if (!it.usable())
+				throw cov::error("E000E");
+			tree_node *reserve = it.mData->left;
+			tree_node *root = it.mData->root;
+			it.mData->left = nullptr;
+			reserve->root = root;
+			if (root != nullptr) {
+				if (it.mData == root->left)
+					root->left = reserve;
+				else
+					root->right = reserve;
+			}
+			destroy(it.mData);
+			if (it.mData == mRoot)
+				mRoot = reserve;
+			return reserve;
+		}
+
+		iterator reserve_right(iterator it)
+		{
+			if (!it.usable())
+				throw cov::error("E000E");
+			tree_node *reserve = it.mData->right;
+			tree_node *root = it.mData->root;
+			it.mData->right = nullptr;
+			reserve->root = root;
+			if (root != nullptr) {
+				if (it.mData == root->left)
+					root->left = reserve;
+				else
+					root->right = reserve;
+			}
+			destroy(it.mData);
+			if (it.mData == mRoot)
+				mRoot = reserve;
+			return reserve;
 		}
 
 		iterator erase_left(iterator it)
 		{
 			if (!it.usable())
 				throw cov::error("E000E");
-			destory(it.mData->left);
+			destroy(it.mData->left);
 			it.mData->left = nullptr;
 			return it;
 		}
@@ -439,9 +498,27 @@ namespace cov {
 		{
 			if (!it.usable())
 				throw cov::error("E000E");
-			destory(it.mData->right);
+			destroy(it.mData->right);
 			it.mData->right = nullptr;
 			return it;
+		}
+
+		iterator merge(iterator it, const cov::tree<T> &tree)
+		{
+			if (!it.usable())
+				throw cov::error("E000E");
+			tree_node *root = it.mData->root;
+			tree_node *subroot = copy(tree.mRoot, root);
+			if (root != nullptr) {
+				if (it.mData == root->left)
+					root->left = subroot;
+				else
+					root->right = subroot;
+			}
+			destroy(it.mData);
+			if (it.mData == mRoot)
+				mRoot = subroot;
+			return subroot;
 		}
 	};
 }
